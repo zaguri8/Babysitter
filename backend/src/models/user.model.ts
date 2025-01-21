@@ -19,9 +19,10 @@ export interface Babysitter extends UserUnion {
   hourlyPrice: number;
   experienceYears: number;
   isBabysitter: true;
+  babysitterEvents: string[];
 }
 
-export type Client = UserUnion & { isBabysitter: false };
+export type Client = UserUnion & { isBabysitter: false; guardianEvents: string[] };
 
 export type User = Babysitter | Client;
 
@@ -68,6 +69,8 @@ const UserScheme = new mongoose.Schema<User>({
   isBabysitter: {
     type: Boolean,
   },
+  guardianEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
+  babysitterEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
 });
 
 UserScheme.pre("save", function () {
@@ -79,6 +82,6 @@ UserScheme.methods.comparePassword = function (pass: string) {
   return PasswordAlgorithms.compare(this.password, pass);
 };
 
-const UserModel = mongoose.model("user", UserScheme);
+const UserModel = mongoose.model("User", UserScheme);
 
 export default UserModel;
